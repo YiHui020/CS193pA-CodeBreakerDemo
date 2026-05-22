@@ -28,9 +28,9 @@ struct GameChooser: View {
                 Text("Choose a Game !")
             }
         }
-        
         .navigationSplitViewStyle(.automatic)
     
+        
         
     }
 }
