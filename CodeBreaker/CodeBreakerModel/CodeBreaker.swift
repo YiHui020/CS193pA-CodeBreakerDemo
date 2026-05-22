@@ -1,0 +1,92 @@
+//
+//  CodeBreaker.swift
+//  Apptest
+//
+//  Created by YiHui020 on 2026/4/9.
+//
+
+
+import SwiftUI // SwiftUI 本身就已经导入 Foundation
+
+@Observable class CodeBreaker {
+    var name: String
+    var masterCode: Code = Code(kind: .master(isHidden: true)) // 答案
+    var guessCode: Code  = Code(kind: .guess)// 输入的guess
+    var attempts: [Code] = [] // 输入后和答案比对的 attempt
+    var pegChoices: [Peg]  = [.green, .red, .blue, .yellow]// 用户可选的颜色
+    var startTime: Date  = Date.now // 游戏开始时间
+    var endTime: Date?
+    var isGameOver: Bool {
+        guard let firstAttemptCodePegs = attempts.first?.pegs else { return false }
+        return firstAttemptCodePegs == masterCode.pegs
+    }
+    
+    init(name: String = "CodeBreaker", pegChoices: [Peg]) {
+        // 先把传入的 pegChoices 保存到实例属性，再用它来生成 masterCode
+        self.pegChoices = pegChoices
+        self.name = name
+        masterCode.randomCode(from: self.pegChoices)
+        print("Master code: \(masterCode.pegs)")
+    }
+    
+    func restart() {
+        guessCode = Code(kind: .guess)
+        attempts = []
+        masterCode = Code(kind:.master(isHidden: true))
+        masterCode.randomCode(from: pegChoices)
+        guessCode.resetPegs()
+        attempts.removeAll()
+        startTime = .now
+        endTime = nil
+         print("Master code: \(masterCode.pegs)")
+    }
+    
+    
+    func changeGuessPeg(at index: Int) { // 选择下一个颜色
+        if index >= 0 && index < guessCode.pegs.count {
+            let existingPeg = guessCode.pegs[index]
+            if let indexOfExistingPegInPegChoices = pegChoices.firstIndex(of: existingPeg) {
+                let nextIndex = (indexOfExistingPegInPegChoices + 1) % pegChoices.count
+                guessCode.pegs[index] = pegChoices[nextIndex]
+            } else {
+                guessCode.pegs[index] = pegChoices.first ?? Code.missingPeg
+            }
+        }
+    }
+    
+    func setGuessPeg(_ peg: Peg, at index: Int) {
+        guard guessCode.pegs.indices.contains(index) else { return }
+        guessCode.pegs[index] = peg
+    }
+    
+    func commitGuess() {
+        guard !attempts.contains(where: { $0.pegs == guessCode.pegs }) else {
+            print("You cant commit the same guess twice!")
+            return
+        }
+        // guard <条件> else { <退出代码> }
+        print("Committing guess: \(guessCode.pegs)")
+        attempts.insert(guessCode, at: 0)
+        attempts[0].kind = .attempt(guessCode.getMatch(guessCode: guessCode, masterCode: masterCode))
+        guessCode.resetPegs()
+        if isGameOver {
+            masterCode.kind = .master(isHidden: false)
+            print("GameOver! YouWin!")
+            endTime = Date.now
+            return
+        }
+    }
+}
+
+typealias Peg = Color
+
+
+extension CodeBreaker: Hashable, Identifiable, Equatable {
+    static func == (lhs: CodeBreaker, rhs: CodeBreaker) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

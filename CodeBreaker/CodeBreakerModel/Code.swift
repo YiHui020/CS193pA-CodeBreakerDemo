@@ -14,13 +14,13 @@ import SwiftUI // SwiftUI 本身就已经导入 Foundation
 // 然后在提交Guess的时候直接调用getMatch来计算每一个attempt的匹配情况，并把结果保存在attempt的kind属性里，这样我们就不需要在ContentView里每次都计算一次匹配情况。
 
 
-struct Code {
+struct Code : Equatable{
     var kind: Kind // 代码种类
     var pegs: [Peg] = Array(repeating: Code.missingPeg, count: 4)// 构成代码的颜色
     
     static let missingPeg = Color.clear
     
-    enum Kind : Equatable {
+    enum Kind: Equatable {
         case master(isHidden: Bool)
         case guess
         case attempt([Match])
