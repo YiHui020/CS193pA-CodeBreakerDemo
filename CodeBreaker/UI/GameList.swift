@@ -91,23 +91,26 @@ struct GameList: View {
         }
         .sheet(item: $gameToEdit) { game in // 这里的 game 是解包的参数 保证item非空才会出现Sheet
             NavigationStack {
-                GameEditor(game: game)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") {
-                                gameToEdit = nil
-                            }
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") {
-                                games.insert(game, at: 0)
-                                gameToEdit = nil
-                            }
-                        }
-                    }
+                GameEditor(game: game) {
+                    submit(game: game)
+                } dismiss: {
+                    dismiss()
+                }
             }
         }
+        
     }
+    
+    
+    func dismiss() {
+        gameToEdit = nil
+    }
+    
+    func submit(game: CodeBreaker) {
+        games.insert(game, at: 0)
+    }
+    
+    
 }
 
 #Preview {

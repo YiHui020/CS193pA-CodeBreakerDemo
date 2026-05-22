@@ -11,6 +11,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		8F2240322FC08D5B000D38E6 /* Extensions */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		8FAFB23A2F880870005F0A16 /* CodeBreaker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = CodeBreaker;
@@ -34,6 +39,7 @@
 			children = (
 				8FAFB23A2F880870005F0A16 /* CodeBreaker */,
 				8FAFB2392F880870005F0A16 /* Products */,
+				8F2240322FC08D5B000D38E6 /* Extensions */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,6 +67,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				8F2240322FC08D5B000D38E6 /* Extensions */,
 				8FAFB23A2F880870005F0A16 /* CodeBreaker */,
 			);
 			name = CodeBreaker;

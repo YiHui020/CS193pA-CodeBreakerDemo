@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PegChoicesPicker: View {
     @Binding var pegChoices: [Peg]
+    
     var body: some View {
         List {
             ForEach (pegChoices.indices, id: \.self) {index in
