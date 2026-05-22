@@ -14,9 +14,11 @@ enum Match {
 }
 
 
-
 struct MatchMakers : View {
+    // MARK: Data In
     let matches: [Match]
+
+    // MARK: - Body
     var body: some View {
         VStack {
             HStack {
@@ -30,7 +32,7 @@ struct MatchMakers : View {
         }
     }
     
-    func matchMaker (peg: Int) -> some View {
+    func matchMaker (peg: Int) -> some View { // 返回matchMaker的View
         let exactCount = matches.count { $0 == .exact }
         let foundCount = matches.count { $0 != .noMatch }
         
@@ -38,9 +40,10 @@ struct MatchMakers : View {
             .fill(exactCount > peg ? Color.primary : Color.clear)
             .strokeBorder(foundCount > peg ? Color.primary : Color.clear ,lineWidth: 2)
             .aspectRatio(1 ,contentMode: .fit)
+        
     }
 }
 
-#Preview {	
+#Preview {
     MatchMakers(matches: [.exact, .exact, .inexact, .noMatch])
 }
