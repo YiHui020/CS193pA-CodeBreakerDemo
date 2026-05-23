@@ -12,6 +12,7 @@ struct GameEditor: View {
     @Bindable var game: CodeBreaker
     @State private var showInvalidGameAlert: Bool = false
     
+    
     // MARK: Action Function
     let submit: (() -> Void)
     let dismiss: (() -> Void)
@@ -69,6 +70,9 @@ struct GameEditor: View {
     
     
 }
+
+
+
 
 
 #Preview {

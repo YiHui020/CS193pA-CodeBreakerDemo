@@ -12,8 +12,10 @@ struct GameList: View {
     @State private var games: [CodeBreaker] = []
     @State var gameToEdit: CodeBreaker?
     
+    
     // MARK: Data Shared by Me
     @Binding var selection: CodeBreaker?
+    
     
     // MARK: Body -
     var body: some View {
@@ -24,6 +26,9 @@ struct GameList: View {
                         GameSummary(game: game)
                     }
                     .contextMenu {
+                        let tempGame = CodeBreaker(name: game.name, pegChoices: game.pegChoices)
+                        // let 只是锁定了引用本身
+                        editButton(for: tempGame) // edit game
                         DeleteButton(for: game)
                     }
 //                        NavigationLink(value: game.masterCode.pegs) {
@@ -54,7 +59,7 @@ struct GameList: View {
         //MARK: Toolbar -
         // toolBar
         .toolbar {
-            EditButton()
+            EditButton() // edit the list
             AddButton()
             
         }
@@ -98,16 +103,25 @@ struct GameList: View {
                 }
             }
         }
-        
     }
     
+    func editButton(for game: CodeBreaker) -> some View {
+        Button("Edit", systemImage: "pencil") {
+                gameToEdit = game
+        }
+    }
     
     func dismiss() {
         gameToEdit = nil
     }
     
     func submit(game: CodeBreaker) {
-        games.insert(game, at: 0)
+        if let index = games.firstIndex(where: { $0.name == game.name }) {
+                games[index] = game
+        } else {
+            games.insert(game, at: 0)
+        }
+            
     }
     
     
