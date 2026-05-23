@@ -1,0 +1,27 @@
+# 开发日志 — CodeBreaker
+
+## 2026-05-23
+
+### 文件变更
+
+- **CodeBreaker/UI/GameList.swift** *(修改)*: 右键菜单新增 Edit 按钮（`editButton(for:)` 方法），`submit(game:)` 方法改为按名称匹配 — 已有游戏则更新，否则插入新记录
+- **CodeBreaker/UI/GameEditor.swift** *(修改)*: 格式调整
+
+### 变更摘要
+
+为 GameList 的列表项右键菜单添加了编辑入口，用户现在可以直接通过右键 Edit 编辑已有游戏。同时重构了 submit 逻辑，使其支持原地更新而非仅追加，避免了编辑后产生重复记录的问题。
+
+## 2026-05-22
+
+### 文件变更
+
+- **Extensions/ModelExtensions.swift** *(新)*: 新增 `isExist()` 校验方法 — 要求至少 2 种不同颜色的 Peg 且名称非空
+- **Extensions/UIExtensions.swift** *(迁移)*: 动画/过渡/颜色/View 扩展从 `CodeBreaker/UI/` 迁移至 `Extensions/` 目录
+- **CodeBreaker/UI/GameEditor.swift** *(修改)*: 添加 toolbar（Cancel / Done 按钮）、闭包式 submit/dismiss 回调、校验失败弹窗、名称输入框的 onSubmit 与自动大写
+- **CodeBreaker/UI/GameList.swift** *(修改)*: Sheet 展示改用闭包回调模式替代内联 toolbar，抽取 `submit(game:)` 和 `dismiss()` 方法
+- **CodeBreaker/UI/PegChoicesPicker.swift** *(修改)*: 格式调整
+- **CodeBreaker.xcodeproj/project.pbxproj** *(修改)*: Xcode 项目结构新增 `Extensions` 组
+
+### 变更摘要
+
+将扩展文件重组到独立的 `Extensions/` 目录，提升项目结构清晰度。为 GameEditor 添加游戏校验逻辑（至少 2 种 Peg + 非空名称），并将导航逻辑从内联 toolbar 重构为闭包回调模式，使组件边界更清晰。
