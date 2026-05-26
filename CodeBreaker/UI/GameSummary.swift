@@ -23,5 +23,5 @@ struct GameSummary: View {
 }
 
 #Preview {
-    GameSummary(game: CodeBreaker(pegChoices: [.red, .green, .blue]))
+    GameSummary(game: CodeBreaker(pegChoices: [Color.red, .green, .blue].map { $0.gameString }))
 }

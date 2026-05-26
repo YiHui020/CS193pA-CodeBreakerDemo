@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameChooser: View {
     // MARK: Data Owned by Me
@@ -37,4 +38,5 @@ struct GameChooser: View {
 
 #Preview {
     GameChooser()
+        .modelContainer(for: CodeBreaker.self)
 }

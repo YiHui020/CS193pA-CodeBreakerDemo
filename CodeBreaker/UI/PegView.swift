@@ -17,7 +17,7 @@ struct PegView: View {
         pegShape
             .contentShape(pegShape)
             .aspectRatio(1,contentMode: .fit)
-            .foregroundStyle(peg)
+            .foregroundStyle(Color(from: peg) ?? .clear)
             .overlay {
                 if peg == Code.missingPeg {
                     pegShape
@@ -28,6 +28,6 @@ struct PegView: View {
 }
 
 #Preview {
-    PegView(peg: .blue)
+    PegView(peg: Color.blue.toHexString())
     
 }

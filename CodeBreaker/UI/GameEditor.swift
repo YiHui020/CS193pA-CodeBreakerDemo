@@ -33,7 +33,7 @@ struct GameEditor: View {
                         }
                 }
                 Section ("Pegs"){
-                    PegChoicesPicker(pegChoices: $game.pegChoices)
+                    PegChoicesPicker(pegChoices: $game.pegColorChoices)
                 }
             }
         }
@@ -76,7 +76,7 @@ struct GameEditor: View {
 
 
 #Preview {
-    @Previewable var game = CodeBreaker(name: "Preview", pegChoices: [.red, .blue, .yellow, .purple])
+    @Previewable var game = CodeBreaker(name: "Preview", pegChoices: [Color.red, .blue, .yellow, .purple].map{ $0.gameString })
     GameEditor(game: game) {
         
     } dismiss: {

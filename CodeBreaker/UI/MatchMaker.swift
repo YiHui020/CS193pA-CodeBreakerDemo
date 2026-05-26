@@ -7,11 +7,6 @@
 
 import SwiftUI
 
-enum Match {
-    case noMatch // 透明/不显示：代表没对上
-    case exact // 实心圆：代表位置和颜色都对
-    case inexact // 空心圆：代表颜色对但位置不对
-}
 
 
 struct MatchMakers : View {

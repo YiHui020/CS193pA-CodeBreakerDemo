@@ -18,7 +18,6 @@ struct ElapsedTimeView: View {
     }
     
     
-    
     // MARK: - body
     var body: some View {
         

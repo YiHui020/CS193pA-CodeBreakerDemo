@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PegChoicesPicker: View {
-    @Binding var pegChoices: [Peg]
+    @Binding var pegChoices: [Color]
     
     var body: some View {
         List {
@@ -52,6 +52,6 @@ struct PegChoicesPicker: View {
 }
 
 #Preview {
-    @Previewable @State var pegChoices: [Peg] = [.red, .blue,.yellow]
+    @Previewable @State var pegChoices: [Color] = [Color.red, .blue,.yellow]
     PegChoicesPicker(pegChoices: $pegChoices)
 }

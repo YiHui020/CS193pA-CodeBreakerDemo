@@ -191,8 +191,26 @@ struct ElapsedTimeTracker: ViewModifier {
 }
 
 
+extension CodeBreaker {
+    convenience init(name: String = "CodeBreaker", pegChoices: [Color]) {
+        self.init(name: name, pegChoices: pegChoices.map(\.gameString))
+    }
+    
+    
+    var pegColorChoices: [Color] {
+        get {
+            pegChoices.map { Color.fromGameString($0)  ?? .clear }
+        }
+        set {
+            pegChoices = newValue.map { $0.gameString }
+        }
+    }
+    
+}
+
+
 #Preview {
-    @Previewable @State var game: CodeBreaker = CodeBreaker(name: "Test", pegChoices: [.brown, .gray, .pink, .cyan, .blue])
+    @Previewable @State var game: CodeBreaker = CodeBreaker(name: "Test", pegChoices: [Color.brown, .gray, .pink, .cyan, .blue])
     
     NavigationStack {
         CodeBreakerView(game: game)

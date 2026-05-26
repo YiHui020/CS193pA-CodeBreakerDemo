@@ -7,24 +7,36 @@
 
 
 import SwiftUI // SwiftUI 本身就已经导入 Foundation
+import SwiftData
 
 
+enum Match : Codable {
+    case noMatch // 透明/不显示：代表没对上
+    case exact // 实心圆：代表位置和颜色都对
+    case inexact // 空心圆：代表颜色对但位置不对
+}
 
-// 简单来说就是给attempt类型加上了一个[Match]的属性，这样我们就可以在ContentView里直接访问code.matches来展示每一个attempt的匹配情况了。
-// 然后在提交Guess的时候直接调用getMatch来计算每一个attempt的匹配情况，并把结果保存在attempt的kind属性里，这样我们就不需要在ContentView里每次都计算一次匹配情况。
-
-
-struct Code : Equatable{
-    var kind: Kind // 代码种类
-    var pegs: [Peg] = Array(repeating: Code.missingPeg, count: 4)// 构成代码的颜色
+@Model
+class Code {
+    var _kind: String// 代码种类
+    var pegs: [Peg] // 构成代码的颜色
     
-    static let missingPeg = Color.clear
     
-    enum Kind: Equatable {
-        case master(isHidden: Bool)
-        case guess
-        case attempt([Match])
+    
+    
+    var kind: Kind {
+        get { Kind(rawString: _kind) ?? .guess }
+        set { _kind = newValue.rawString }
     }
+    
+    
+    static let missingPeg = ""
+    
+    init(kind: Kind, pegs: [Peg] = Array(repeating: Code.missingPeg, count: 4)) {
+        self.pegs = pegs
+        self._kind = kind.rawString
+    }
+    
     
     var isHidden: Bool {
         switch kind {
@@ -40,13 +52,13 @@ struct Code : Equatable{
         }
     }
     
-    mutating func randomCode(from pegChoices: [Peg]) {
+    func randomCode(from pegChoices: [Peg]) {
         for index in pegs.indices {
             pegs[index] = pegChoices.randomElement() ?? Code.missingPeg
         }
     }
     
-    mutating func resetPegs() {
+    func resetPegs() {
         pegs = Array(repeating: Code.missingPeg,count: pegs.count)
     }
 
@@ -75,3 +87,7 @@ struct Code : Equatable{
         return result
     }
 }
+
+
+
+
