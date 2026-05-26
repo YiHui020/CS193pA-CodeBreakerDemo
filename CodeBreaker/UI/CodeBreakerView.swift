@@ -11,8 +11,11 @@
 import SwiftUI
 
 struct CodeBreakerView: View {
-    // MARK:  Data Initialize by Me
-//    @State private var game = CodeBreaker(pegChoices: [.brown, .gray, .pink, .cyan, .blue])
+    //MARK: Data In
+    @Environment(\.scenePhase) var scenePhase
+    
+    
+    // MARK:  Data Owned by Me
     @State private var selection : Int = 0
     @State private var restarting: Bool = false
     @State private var showMatchMakers: Bool = false
@@ -61,13 +64,11 @@ struct CodeBreakerView: View {
                 
         }
         .padding(10)
+        
+        
+        .trackElapsedTime(in: game)
         // Time Compute
-        .onAppear {
-            game.startTimer()
-        }
-        .onDisappear {
-            game.pauseTimer()
-        }
+        
         .toolbar { // all ToolbarItem or all not
             ToolbarItem (placement: .primaryAction) {
                 Button ("RESTART",systemImage: "arrow.trianglehead.counterclockwise.rotate.90",action: reStartAnimation)
@@ -154,8 +155,40 @@ struct CodeBreakerView: View {
     
 }
 
+extension View {
+    func trackElapsedTime(in game: CodeBreaker) -> some View {
+        self.modifier(ElapsedTimeTracker(game: game))
+    }
+}
 
 
+
+struct ElapsedTimeTracker: ViewModifier {
+    @Environment(\.scenePhase) var scenePhase
+    let game: CodeBreaker
+    
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                game.startTimer()
+            }
+            .onChange (of: game){ oldGame, newGame in
+                oldGame.pauseTimer()
+                newGame.startTimer()
+
+            }
+            .onChange(of: scenePhase) {
+                switch scenePhase {
+                case .active: game.startTimer()
+                case .background: game.pauseTimer()
+                default: break
+                }
+            }
+            .onDisappear {
+                game.pauseTimer()
+            }
+    }
+}
 
 
 #Preview {
