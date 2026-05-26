@@ -1,5 +1,18 @@
 # 开发日志 — CodeBreaker
 
+## 2026-05-26
+
+### 文件变更
+
+- **CodeBreaker/UI/ElapsedTimeView.swift** *(修改)*: startTime 改为可选类型，新增 elapsedTime 参数和 format 计算属性，startTime 为 nil 时显示暂停图标
+- **CodeBreaker/CodeBreakerModel/CodeBreaker.swift** *(修改)*: 新增 startTimer()/pauseTimer() 方法，startTime 改为可选、新增 elapsedTime 累积，restart() 中交由 onAppear 触发计时
+- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: 添加 onAppear/onDisappear 生命周期钩子驱动计时器启停，传递 elapsedTime 给 ElapsedTimeView
+- **CodeBreaker/UI/GameList.swift** *(修改)*: 新增 leading swipe 编辑操作，sheet 从按钮移至 List 层级，列表样式改为 plain，editButton 改用 init 值拷贝避免引用共享
+
+### 变更摘要
+
+计时器重构：支持暂停/恢复与跨会话时间累积，离开页面自动暂停、返回自动恢复。GameList 交互优化：新增侧滑编辑快捷操作，修复编辑时引用共享导致的数据污染问题。
+
 ## 2026-05-23
 
 ### 文件变更
