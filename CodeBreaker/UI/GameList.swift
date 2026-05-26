@@ -26,14 +26,13 @@ struct GameList: View {
                         GameSummary(game: game)
                     }
                     .contextMenu {
-                        let tempGame = CodeBreaker(name: game.name, pegChoices: game.pegChoices)
-                        // let 只是锁定了引用本身
-                        editButton(for: tempGame) // edit game
+                        editButton(for: game) // edit game
                         DeleteButton(for: game)
                     }
-//                        NavigationLink(value: game.masterCode.pegs) {
-//                            Text("Cheat")
-//                        }
+                    .swipeActions(edge: .leading) {
+                        editButton(for: game)
+                            .tint(.accentColor)
+                    }
                 }
             }
             
@@ -55,7 +54,19 @@ struct GameList: View {
         .navigationDestination(for: [Peg].self) { masterCode in
             PegChooser(choices: masterCode).padding()
         }
-        .listStyle(.sidebar)
+        .listStyle(.plain)
+        
+        .sheet(item: $gameToEdit) { game in // 这里的 game 是解包的参数 保证item非空才会出现Sheet
+            NavigationStack {
+                GameEditor(game: game) {
+                    submit(game: game)
+                } dismiss: {
+                    dismiss()
+                }
+            }
+        }
+        
+        
         //MARK: Toolbar -
         // toolBar
         .toolbar {
@@ -94,20 +105,16 @@ struct GameList: View {
         Button("",systemImage: "plus") {
             gameToEdit = CodeBreaker(name: "Untitled", pegChoices: [.red, .blue,.purple,.indigo])
         }
-        .sheet(item: $gameToEdit) { game in // 这里的 game 是解包的参数 保证item非空才会出现Sheet
-            NavigationStack {
-                GameEditor(game: game) {
-                    submit(game: game)
-                } dismiss: {
-                    dismiss()
-                }
-            }
-        }
+        
     }
     
     func editButton(for game: CodeBreaker) -> some View {
-        Button("Edit", systemImage: "pencil") {
-                gameToEdit = game
+        let copyOfGame = CodeBreaker(name: game.name, pegChoices: game.pegChoices)
+        // 我们用 init 进行值传递
+        // let 只是锁定了引用本身
+
+        return Button("Edit", systemImage: "pencil") {
+                gameToEdit = copyOfGame
         }
     }
     

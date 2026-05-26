@@ -14,8 +14,9 @@ import SwiftUI // SwiftUI 本身就已经导入 Foundation
     var guessCode: Code  = Code(kind: .guess)// 输入的guess
     var attempts: [Code] = [] // 输入后和答案比对的 attempt
     var pegChoices: [Peg]  = [.green, .red, .blue, .yellow]// 用户可选的颜色
-    var startTime: Date  = Date.now // 游戏开始时间
+    var startTime: Date? // 游戏开始时间
     var endTime: Date?
+    var elapsedTime: TimeInterval = 0 // 游戏时长
     var isGameOver: Bool {
         guard let firstAttemptCodePegs = attempts.first?.pegs else { return false }
         return firstAttemptCodePegs == masterCode.pegs
@@ -36,9 +37,10 @@ import SwiftUI // SwiftUI 本身就已经导入 Foundation
         masterCode.randomCode(from: pegChoices)
         guessCode.resetPegs()
         attempts.removeAll()
-        startTime = .now
+        startTime = Date.now    // 让 onAppear 的 startTimer() 来负责启动
         endTime = nil
-         print("Master code: \(masterCode.pegs)")
+        elapsedTime = 0
+        print("Master code: \(masterCode.pegs)")
     }
     
     
@@ -73,8 +75,22 @@ import SwiftUI // SwiftUI 本身就已经导入 Foundation
             masterCode.kind = .master(isHidden: false)
             print("GameOver! YouWin!")
             endTime = Date.now
+            pauseTimer()
             return
         }
+    }
+    
+    func startTimer() {
+        if startTime == nil, !isGameOver {
+            startTime = Date.now
+        }
+    }
+    
+    func pauseTimer() {
+        if let startTime {
+            elapsedTime += Date.now.timeIntervalSince(startTime)
+        }
+        startTime = nil
     }
 }
 

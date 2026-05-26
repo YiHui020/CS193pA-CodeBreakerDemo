@@ -61,6 +61,13 @@ struct CodeBreakerView: View {
                 
         }
         .padding(10)
+        // Time Compute
+        .onAppear {
+            game.startTimer()
+        }
+        .onDisappear {
+            game.pauseTimer()
+        }
         .toolbar { // all ToolbarItem or all not
             ToolbarItem (placement: .primaryAction) {
                 Button ("RESTART",systemImage: "arrow.trianglehead.counterclockwise.rotate.90",action: reStartAnimation)
@@ -68,13 +75,15 @@ struct CodeBreakerView: View {
             ToolbarItem (placement: .automatic) {
                 ElapsedTimeView(
                     startTime: game.startTime,
-                    endTime: game.endTime
+                    endTime: game.endTime,
+                    elapsedTime: game.elapsedTime
                 )
 //                .flexibleSystemFont()
                 .monospaced(true)
                 .lineLimit(1)
             }
         }
+        
     }
 
     

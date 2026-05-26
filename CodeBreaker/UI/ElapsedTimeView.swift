@@ -9,16 +9,28 @@ import SwiftUI
 
 struct ElapsedTimeView: View {
     // MARK: Data in
-    let startTime: Date
+    let startTime: Date?
     let endTime: Date?
+    let elapsedTime: TimeInterval
+    
+    var format:SystemFormatStyle.DateOffset {
+        .offset(to: startTime! - elapsedTime, allowedFields: [.minute, .second])
+    }
+    
     
     
     // MARK: - body
     var body: some View {
-        if let endTime { // if let endTime = endTime
-            Text(endTime, format: .offset(to: startTime, allowedFields: [.minute, .second]))
-        } else {
-            Text(TimeDataSource<Date>.currentDate, format: .offset(to: startTime, allowedFields: [.minute, .second]))
+        
+        if startTime != nil {
+            if let endTime { // if let endTime = endTime
+                Text(endTime, format: format)
+            } else {
+                Text(TimeDataSource<Date>.currentDate, format: format)
+            }
+        }
+        else {
+            Image(systemName: "pause")
         }
         
     }
