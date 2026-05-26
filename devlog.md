@@ -2,18 +2,25 @@
 
 ## 2026-05-26
 
-### 文件变更
+### SwiftData 迁移 + Peg 类型重构 (7aafbdd)
 
-- **CodeBreaker/UI/ElapsedTimeView.swift** *(修改)*: startTime 改为可选类型，新增 elapsedTime 参数和 format 计算属性，startTime 为 nil 时显示暂停图标
-- **CodeBreaker/CodeBreakerModel/CodeBreaker.swift** *(修改)*: 新增 startTimer()/pauseTimer() 方法，startTime 改为可选、新增 elapsedTime 累积，restart() 中交由 onAppear 触发计时
-- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: 添加 onAppear/onDisappear 生命周期钩子驱动计时器启停，传递 elapsedTime 给 ElapsedTimeView
-- **CodeBreaker/UI/GameList.swift** *(修改)*: 新增 leading swipe 编辑操作，sheet 从按钮移至 List 层级，列表样式改为 plain，editButton 改用 init 值拷贝避免引用共享
-- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: 计时器逻辑提取为 ElapsedTimeTracker ViewModifier，新增 scenePhase 响应（后台暂停、前台恢复），View extension `trackElapsedTime(in:)` 统一调用入口
-- **CodeBreaker/UI/GameChooser.swift** *(修改)*: 格式调整
+- **CodeBreaker/CodeBreakerModel/CodeBreaker.swift** *(修改)*: `@Observable` → `@Model`，Peg typealias 从 Color 改为 String，masterCode/guessCode/attempts 添加 `@Relationship(deleteRule: .cascade)`，startTime 添加 `@Transient`，移除手写的 Hashable/Identifiable/Equatable（@Model 自动合成），commitGuess() 改为创建新 Code 实例而非原地修改 kind
+- **CodeBreaker/CodeBreakerModel/Code.swift** *(修改)*: struct → `@Model` class，Kind 枚举提取至独立文件，kind 通过 `_kind: String` 存储并桥接计算属性，Match 枚举从 MatchMaker.swift 迁入并添加 Codable 遵从，移除 mutating 关键字（class 不需要）
+- **CodeBreaker/CodeBreakerModel/Kind.swift** *(新)*: 从 Code.swift 提取 Kind 枚举，新增 rawString 序列化 / init?(rawString:) 反序列化，支持 master(isHidden:)/guess/attempt([Match]) 三种 case 与 String 互转
+- **CodeBreaker/CodeBreakerModel/CodeBreakerApp.swift** *(修改)*: 添加 `import SwiftData`，GameChooser 注入 `.modelContainer(for: CodeBreaker.self)`
+- **CodeBreaker/UI/Color+String.swift** *(新→完整)*: Color 扩展完整实现 — 支持预设名称/十六进制/RGB/RGBA 多格式解析，toHexString/toRGBString/toRGBAString/toColorNameString 输出，gameString/fromGameString 游戏专用转换
+- **CodeBreaker/UI/PegView.swift** *(修改)*: `foregroundStyle(peg)` → `foregroundStyle(Color(from: peg) ?? .clear)`，Preview 改用 `Color.blue.toHexString()`
+- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: 新增 `convenience init(name:pegChoices: [Color])` 桥接旧 Color API，新增 `pegColorChoices` 计算属性双向转换 Color↔String，ElapsedTimeTracker 的 onChange(of: game) 改为双参数版
+- **CodeBreaker/UI/PegChoicesPicker.swift** *(修改)*: `@Binding var pegChoices: [Peg]` → `[Color]`，Preview 适配
+- **CodeBreaker/UI/GameEditor.swift** *(修改)*: pegChoices 改为 pegColorChoices，Preview 适配 String peg
+- **CodeBreaker/UI/GameSummary.swift** *(修改)*: Preview 适配 `.map { $0.gameString }`
+- **CodeBreaker/UI/GameChooser.swift** *(修改)*: 添加 SwiftData import，Preview 注入 modelContainer 修复崩溃
+- **CodeBreaker/UI/MatchMaker.swift** *(修改)*: 移除 Match 枚举（迁至 Code.swift）
+- **CodeBreaker/UI/ElapsedTimeView.swift** *(修改)*: 格式微调
 
 ### 变更摘要
 
-计时器进一步重构：将 onAppear/onDisappear 内联逻辑抽取为可复用的 ElapsedTimeTracker ViewModifier，并接入 scenePhase 实现应用前后台切换时的自动暂停/恢复，提升计时精度的同时保持代码整洁。
+核心架构升级：将数据模型从 `@Observable` + `struct` 迁移至 SwiftData 的 `@Model` + `class`，Peg 类型从 `Color` 改为 `String` 以实现持久化存储。新增完整的 Color↔String 双向转换层确保 UI 层不受影响。Kind 枚举独立成文件并实现序列化以适配 @Model 的存储需求。所有 Preview 同步修复（含 GameChooser 补上 modelContainer 修复预览崩溃）。
 
 ## 2026-05-23
 
