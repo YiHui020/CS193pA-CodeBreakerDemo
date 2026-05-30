@@ -36,7 +36,9 @@ struct GameChooser: View {
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     GameChooser()
-        .modelContainer(for: CodeBreaker.self)
 }
+
+
+//  14 51:21

@@ -6,15 +6,22 @@
 //
 
 import SwiftUI
+import SwiftData
+
 
 struct GameList: View {
+    // MARK: Data In
+    @Environment(\.modelContext) var modelContext // 连接到 SwiftData 的环境变量 让我们可以访问数据模型容器
+    
     // MARK: Data Owned by Me
-    @State private var games: [CodeBreaker] = []
     @State var gameToEdit: CodeBreaker?
     
     
     // MARK: Data Shared by Me
     @Binding var selection: CodeBreaker?
+    @Query(sort: \CodeBreaker.name, order: .forward) private var games: [CodeBreaker]
+    // @Query(filter: #Predicate { $0.name != nil }) ...
+    //@Query 会持续查询
     
     
     // MARK: Body -
@@ -36,12 +43,12 @@ struct GameList: View {
                 }
             }
             
-            .onDelete { indexSet in
-                games.remove(atOffsets: indexSet)
+            .onDelete { indexSets in
+                for indexSet in indexSets {
+                    modelContext.delete(games[indexSet])
+                }
             }
-            .onMove { offsets,destination in
-                games.move(fromOffsets: offsets, toOffset: destination)
-            }
+            
         }
         .animation(.easeInOut, value: games.count)
         .onChange(of: games) {
@@ -77,18 +84,28 @@ struct GameList: View {
         // MARK: Toolbar End -
         
         .onAppear {
-            if games.isEmpty {
+            
+            let fetchDescriptor = FetchDescriptor<CodeBreaker>(
+                predicate: .true, // 这个谓词表示获取所有对象
+//                sortBy: [.init(\.name)] // 返回结果按照 name 排序
+            )
+            let results = try? modelContext.fetchCount(fetchDescriptor)
+            if let results, results == 0  {
                 selection = games.first
-                games.append(CodeBreaker(
+                modelContext.insert(CodeBreaker(
                     name: "EnterGrade",
                     pegChoices: [.red, .green, .blue]))
-                games.append(CodeBreaker(
+                modelContext.insert(CodeBreaker(
                     name: "NormalGrade",
                     pegChoices: [.indigo, .cyan, .mint, .teal]))
-                games.append(CodeBreaker(
+                modelContext.insert(CodeBreaker(
                     name: "MasterGrade",
                     pegChoices: [.orange, .yellow, .pink, .brown, .gray]))
+            } else {
+                print("had Problem fetching CodeBreaker objects")
             }
+            
+            
         }
 
     }
@@ -96,7 +113,9 @@ struct GameList: View {
     func DeleteButton(for game: CodeBreaker) -> some View {
         Button ("Delete", systemImage: "minus.circle", role: .destructive) {
             withAnimation {
-                games.removeAll(where:{ $0 == game})
+                if let index = games.firstIndex(where:{ $0 == game}) {
+                    modelContext.delete(games[index])
+                }
             }
         }
     }
@@ -124,11 +143,9 @@ struct GameList: View {
     
     func submit(game: CodeBreaker) {
         if let index = games.firstIndex(where: { $0.name == game.name }) {
-                games[index] = game
-        } else {
-            games.insert(game, at: 0)
+            modelContext.delete(games[index]) // 先删除原来的对象
         }
-            
+        modelContext.insert(game) // 直接插入新的
     }
     
     

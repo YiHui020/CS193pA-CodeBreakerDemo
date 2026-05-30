@@ -199,10 +199,10 @@ extension CodeBreaker {
     
     var pegColorChoices: [Color] {
         get {
-            pegChoices.map { Color.fromGameString($0)  ?? .clear }
+            pegChoices.map { Color.fromGameString($0)  ?? .clear } // 翻译为 Color 数组供 UI 使用，如果转换失败则用 .clear 占位
         }
         set {
-            pegChoices = newValue.map { $0.gameString }
+            pegChoices = newValue.map { $0.gameString } // 转换为 String 覆盖 CodeBreaker 的 pegChoices 数组
         }
     }
     

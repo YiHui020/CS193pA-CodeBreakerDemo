@@ -10,7 +10,7 @@ import SwiftUI // SwiftUI 本身就已经导入 Foundation
 import SwiftData
 
 
-enum Match : Codable {
+enum Match : String, Codable, Sendable, Equatable {
     case noMatch // 透明/不显示：代表没对上
     case exact // 实心圆：代表位置和颜色都对
     case inexact // 空心圆：代表颜色对但位置不对
@@ -20,15 +20,11 @@ enum Match : Codable {
 class Code {
     var _kind: String// 代码种类
     var pegs: [Peg] // 构成代码的颜色
-    
-    
-    
-    
     var kind: Kind {
         get { Kind(rawString: _kind) ?? .guess }
         set { _kind = newValue.rawString }
     }
-    
+    var timeStamp = Date.now // 记录生成时间，方便排序
     
     static let missingPeg = ""
     

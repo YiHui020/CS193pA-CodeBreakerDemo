@@ -16,15 +16,20 @@ typealias Peg = String
     var name: String
     @Relationship(deleteRule: .cascade) var masterCode: Code = Code(kind: .master(isHidden: true))
     @Relationship(deleteRule: .cascade) var guessCode: Code  = Code(kind: .guess)// 输入的guess // 1
-    @Relationship(deleteRule: .cascade) var attempts: [Code] = [] // 输入后和答案比对的 attempt // 1
+    @Relationship(deleteRule: .cascade) var _attempts: [Code] = [] // 输入后和答案比对的 attempt // 1
+    var attempts: [Code] {
+        get { _attempts.sorted(by: { $0.timeStamp > $1.timeStamp })}
+        set { _attempts = newValue }
+    }
+    
     var pegChoices: [Peg]// 用户可选的颜色 // 1
     @Transient var startTime: Date? // 游戏开始时间
-    var endTime: Date?
+    var endTime: Date? 
     var elapsedTime: TimeInterval = 0 // 游戏时长
     
     
     var isGameOver: Bool {
-        guard let firstAttemptCodePegs = attempts.first?.pegs else { return false }
+        guard let firstAttemptCodePegs =  attempts.first?.pegs else { return false }
         return firstAttemptCodePegs == masterCode.pegs
     }
     
@@ -100,6 +105,7 @@ typealias Peg = String
     func startTimer() {
         if startTime == nil, !isGameOver {
             startTime = Date.now
+            elapsedTime += 0.00001
         }
     }
     
