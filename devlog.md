@@ -1,5 +1,21 @@
 # 开发日志 — CodeBreaker
 
+## 2026-05-30
+
+### 文件变更
+
+- **CodeBreaker/CodeBreakerModel/Code.swift** *(修改)*: Match 枚举新增 String/Sendable/Equatable 遵从，Code 类新增 `timeStamp` 属性（默认为 .now），用于 attempts 排序
+- **CodeBreaker/CodeBreakerModel/CodeBreaker.swift** *(修改)*: attempts 改为 `_attempts` 后备字段 + 计算属性（按 timeStamp 降序排列）；`startTimer()` 微增 elapsedTime 以触发 SwiftUI 刷新
+- **CodeBreaker/UI/Color+String.swift** *(重构)*: 提取 `namedColors` 静态字典，新增 grey/primary/secondary/accent/accentColor 预设支持；重组解析优先级（预设名 → 十六进制 → RGBA → RGB）；`gameString`/`fromGameString` 改为调用通用转换方法，消除硬编码 switch；简化多处辅助方法；移除废弃的示例代码块
+- **CodeBreaker/UI/GameList.swift** *(重构)*: `@State private var games` → `@Query` 持久化查询；`games.remove()` → `modelContext.delete()`；`games.append()` → `modelContext.insert()`；`onAppear` 使用 FetchDescriptor 检查数据是否为空再播种初始数据
+- **CodeBreaker/UI/GameChooser.swift** *(修改)*: Preview 改用 `.swiftData` trait 替代手写 modelContainer
+- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: pegColorChoices 计算属性添加注释说明 Color↔String 转换意图
+- **CodeBreaker/UI/SwiftDataPreview.swift** *(新)*: 实现 PreviewModifier 协议，提供内存模式 ModelContainer 供 Preview 使用
+
+### 变更摘要
+
+GameList 完成 SwiftData 迁移的最后一步 — 淘汰本地 @State 数组，改用 @Query 与 modelContext 实现完整的持久化 CRUD。Color 字符串转换层大幅精简：提取统一颜色表后，gameString/fromGameString 从数十行硬编码 switch 缩减为一行调用，同时扩展了 grey/accent 等预设的支持。新增 SwiftDataPreview 为所有 SwiftData Preview 提供标准化的内存容器。
+
 ## 2026-05-26
 
 ### SwiftData 迁移 + Peg 类型重构 (7aafbdd)
