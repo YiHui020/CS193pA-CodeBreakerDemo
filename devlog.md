@@ -1,5 +1,18 @@
 # 开发日志 — CodeBreaker
 
+## 2026-06-05
+
+### 文件变更
+
+- **CodeBreaker/CodeBreakerModel/CodeBreaker.swift** *(修改)*: 新增 `lastPlayedTime` 属性（Date?），init 时置 nil，进入游戏时更新
+- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: onAppear 设置 `game.lastPlayedTime = Date.now`
+- **CodeBreaker/UI/GameChooser.swift** *(修改)*: 新增 SortPicker（Name/Recent 分段选择器）+ searchable 搜索栏
+- **CodeBreaker/UI/GameList.swift** *(修改)*: init 重构为动态 @Query（sort + predicate），新增 SortOption 枚举（name/recent）
+
+### 变更摘要
+
+GameList 新增排序与搜索功能：用户可按游戏名称或最近游玩时间排序，并通过搜索栏过滤游戏列表。模型层同步添加 `lastPlayedTime` 属性以支持"最近"排序依据，进入游戏画面时自动更新该时间戳。
+
 ## 2026-05-30
 
 ### 文件变更
