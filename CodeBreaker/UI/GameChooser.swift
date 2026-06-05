@@ -27,6 +27,7 @@ struct GameChooser: View {
             .padding(.horizontal)
             GameList(selection: $selection, sortBy: sortOption,searchBy: searchString)
                 .searchable(text: $searchString, prompt: "Search Games")
+            
         } detail: {
             if let selection {
                 CodeBreakerView(game: selection)

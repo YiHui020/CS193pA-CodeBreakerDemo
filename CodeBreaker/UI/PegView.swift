@@ -12,7 +12,7 @@ struct PegView: View {
     let peg: Peg
 
     // MARK: - Body
-    let pegShape = Circle()
+    let pegShape = CustomShape()
     var body: some View {
         pegShape
             .contentShape(pegShape)
@@ -21,7 +21,7 @@ struct PegView: View {
             .overlay {
                 if peg == Code.missingPeg {
                     pegShape
-                        .strokeBorder(.primary, lineWidth: 0.3)
+//                        .strokeBorder(.primary, lineWidth: 0.3)
                 }
             }
     }

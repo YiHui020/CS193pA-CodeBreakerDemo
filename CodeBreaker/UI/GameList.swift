@@ -32,16 +32,20 @@ struct GameList: View {
           searchBy: String = ""
     ) {
         let lowercaseSearchString = searchBy.lowercased()
-        let capitalizedSearchString = searchBy.capitalized
         let predicate = #Predicate<CodeBreaker> { game in
-            searchBy.isEmpty || game.name.contains(lowercaseSearchString)
-            || game.name.contains(capitalizedSearchString)
+            searchBy.isEmpty || game.lowercasedName.contains(lowercaseSearchString)
         }
         
+        
+        let completedPredicate = #Predicate<CodeBreaker> { game in
+            (searchBy.isEmpty || game.lowercasedName.contains(lowercaseSearchString))
+            && game.isCompleted
+        }
         _selection = selection // _selction 是 selection 的 getter 和 setter 即包装器
         switch sortBy {
         case .name: _games = Query(filter: predicate, sort: \.name) // 按名字升序排序
         case .recent: _games = Query(filter: predicate, sort: \.lastPlayedTime, order: .reverse) // 按最后一次玩的时间降序排序
+        case .completed: _games = Query(filter: completedPredicate, sort: \.name) // 按完成状态降序排序
         }
     }
     
@@ -135,10 +139,12 @@ struct GameList: View {
     enum SortOption :CaseIterable {
         case name
         case recent
+        case completed
         var title: String {
             switch self {
             case .name:  return "Name"
             case .recent:  return "Recent"
+            case .completed: return "Completed"
             }
         }
     }

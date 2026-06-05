@@ -14,6 +14,7 @@ typealias Peg = String
 
 @Model class CodeBreaker {
     var name: String
+    var lowercasedName: String
     @Relationship(deleteRule: .cascade) var masterCode: Code = Code(kind: .master(isHidden: true))
     @Relationship(deleteRule: .cascade) var guessCode: Code  = Code(kind: .guess)// 输入的guess // 1
     @Relationship(deleteRule: .cascade) var _attempts: [Code] = [] // 输入后和答案比对的 attempt // 1
@@ -21,7 +22,6 @@ typealias Peg = String
         get { _attempts.sorted(by: { $0.timeStamp > $1.timeStamp })}
         set { _attempts = newValue }
     }
-    
     var lastPlayedTime: Date? = Date.now
     var pegChoices: [Peg]// 用户可选的颜色 // 1
     @Transient var startTime: Date? // 游戏开始时间
@@ -31,8 +31,15 @@ typealias Peg = String
     
     var isGameOver: Bool {
         guard let firstAttemptCodePegs =  attempts.first?.pegs else { return false }
-        return firstAttemptCodePegs == masterCode.pegs
+        if firstAttemptCodePegs == masterCode.pegs {
+            isCompleted = true
+            return true
+        }
+        else {
+            return false
+        }
     }
+    var isCompleted: Bool = false // 标记游戏是否完成
     
     
     
@@ -41,7 +48,9 @@ typealias Peg = String
         // 先把传入的 pegChoices 保存到实例属性，再用它来生成 masterCode
         self.pegChoices = pegChoices
         self.name = name
+        self.lowercasedName = name.lowercased()
         self.lastPlayedTime = nil
+        
         masterCode.randomCode(from: self.pegChoices)
         print("Master code: \(masterCode.pegs)")
     }
@@ -117,6 +126,12 @@ typealias Peg = String
         }
         startTime = nil
     }
+    
+    func updateElapsedTime() {
+        pauseTimer()
+        startTimer()
+    }
+    
 }
 
 

@@ -12,8 +12,21 @@ import SwiftData
 struct CodeBreakerApp: App {
     var body: some Scene {
         WindowGroup {
-            GameChooser()
-                .modelContainer(for: CodeBreaker.self)
+            GeometryReader { geometry in
+                GameChooser()
+                    .modelContainer(for: CodeBreaker.self)
+                    .environment(\.sceneFrame, geometry.frame(in: .global))
+            }
         }
     }
+}
+
+
+extension EnvironmentValues {
+    @Entry var sceneFrame: CGRect = ({
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            return scene.screen.bounds
+        }
+        return .zero
+    }())
 }
