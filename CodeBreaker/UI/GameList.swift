@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 
+
+
 struct GameList: View {
     // MARK: Data In
     @Environment(\.modelContext) var modelContext // 连接到 SwiftData 的环境变量 让我们可以访问数据模型容器
@@ -19,9 +21,29 @@ struct GameList: View {
     
     // MARK: Data Shared by Me
     @Binding var selection: CodeBreaker?
-    @Query(sort: \CodeBreaker.name, order: .forward) private var games: [CodeBreaker]
+    @State var sortBy: GameList.SortOption = .name
+    @Query private var games: [CodeBreaker]
     // @Query(filter: #Predicate { $0.name != nil }) ...
     //@Query 会持续查询
+    
+    
+    init (selection: Binding<CodeBreaker?>,
+          sortBy: GameList.SortOption = .name,
+          searchBy: String = ""
+    ) {
+        let lowercaseSearchString = searchBy.lowercased()
+        let capitalizedSearchString = searchBy.capitalized
+        let predicate = #Predicate<CodeBreaker> { game in
+            searchBy.isEmpty || game.name.contains(lowercaseSearchString)
+            || game.name.contains(capitalizedSearchString)
+        }
+        
+        _selection = selection // _selction 是 selection 的 getter 和 setter 即包装器
+        switch sortBy {
+        case .name: _games = Query(filter: predicate, sort: \.name) // 按名字升序排序
+        case .recent: _games = Query(filter: predicate, sort: \.lastPlayedTime, order: .reverse) // 按最后一次玩的时间降序排序
+        }
+    }
     
     
     // MARK: Body -
@@ -108,6 +130,17 @@ struct GameList: View {
             
         }
 
+    }
+    
+    enum SortOption :CaseIterable {
+        case name
+        case recent
+        var title: String {
+            switch self {
+            case .name:  return "Name"
+            case .recent:  return "Recent"
+            }
+        }
     }
     
     func DeleteButton(for game: CodeBreaker) -> some View {

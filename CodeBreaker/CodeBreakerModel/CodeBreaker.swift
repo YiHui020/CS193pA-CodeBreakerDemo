@@ -22,6 +22,7 @@ typealias Peg = String
         set { _attempts = newValue }
     }
     
+    var lastPlayedTime: Date? = Date.now
     var pegChoices: [Peg]// 用户可选的颜色 // 1
     @Transient var startTime: Date? // 游戏开始时间
     var endTime: Date? 
@@ -40,6 +41,7 @@ typealias Peg = String
         // 先把传入的 pegChoices 保存到实例属性，再用它来生成 masterCode
         self.pegChoices = pegChoices
         self.name = name
+        self.lastPlayedTime = nil
         masterCode.randomCode(from: self.pegChoices)
         print("Master code: \(masterCode.pegs)")
     }

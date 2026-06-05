@@ -64,8 +64,9 @@ struct CodeBreakerView: View {
                 
         }
         .padding(10)
-        
-        
+        .onAppear {
+            game.lastPlayedTime = Date.now
+        }
         .trackElapsedTime(in: game)
         // Time Compute
         
