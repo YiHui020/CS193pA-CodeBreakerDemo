@@ -15,13 +15,13 @@ struct PegView: View {
     let pegShape = CustomShape()
     var body: some View {
         pegShape
-            .contentShape(pegShape)
+            .contentShape(pegShape) // 定义点击区域为可视范围
             .aspectRatio(1,contentMode: .fit)
             .foregroundStyle(Color(from: peg) ?? .clear)
             .overlay {
                 if peg == Code.missingPeg {
                     pegShape
-//                        .strokeBorder(.primary, lineWidth: 0.3)
+                        .stroke(Color.primary, lineWidth: 0.3)
                 }
             }
     }

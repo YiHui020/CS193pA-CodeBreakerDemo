@@ -13,12 +13,13 @@ import SwiftUI
 struct CodeBreakerView: View {
     //MARK: Data In
     @Environment(\.scenePhase) var scenePhase
-    
+    @Environment(\.sceneFrame) var sceneFrame
     
     // MARK:  Data Owned by Me
     @State private var selection : Int = 0
     @State private var restarting: Bool = false
     @State private var showMatchMakers: Bool = false
+    @State private var lastRotationAngle: Angle = .zero
     
     // MARK: Data Shared with Me
     let game: CodeBreaker // 列表更新数据要用到
@@ -52,19 +53,32 @@ struct CodeBreakerView: View {
                     // 拿到Attempts的动画
                 }
             }
-            GeometryReader { geometry in
-                if !game.isGameOver {
-                    guessButton
-                        .transition(.offset(x: 0, y: 200))
-                    PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
-                        .transition(.pegChooser)
-                        .frame(maxHeight: 80)
-                        
+            
+            VStack{
+                GeometryReader { buttonGeometry in
+                    if !game.isGameOver {
+                        let transitionOffset = sceneFrame.maxY - buttonGeometry.frame(in: .global).minY
+                            guessButton
+                                .transition(.offset(x: 0, y: transitionOffset))
+                                .frame(maxWidth: .infinity)
+                    }
                 }
+    //            .aspectRatio(CGFloat(game.pegChoices.count) * 0.5, contentMode: .fit)
+                .frame(maxHeight: 60)
+
+                GeometryReader { pegGeometry in
+                    if !game.isGameOver {
+                        let transitionOffset = sceneFrame.maxY - pegGeometry.frame(in: .global).minY
+                            PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
+                                .transition(.offset(x: 0, y: transitionOffset))
+                    }
+                }
+                .aspectRatio(CGFloat(game.pegChoices.count), contentMode: .fit)
+                .frame(maxHeight: 85)
             }
             
-                
         }
+        .gesture(pegChoosingDial)
         .padding(10)
         .onAppear {
             game.lastPlayedTime = Date.now
@@ -92,7 +106,21 @@ struct CodeBreakerView: View {
     }
 
     
-    
+    var pegChoosingDial: some Gesture {
+        RotateGesture()
+            .onChanged { value in
+                let delta = value.rotation - lastRotationAngle
+                let threshold = Angle.degrees(30)
+                let count = game.guessCode.pegs.count
+                if delta >= threshold {
+                    selection = (selection + 1) % count
+                    lastRotationAngle = value.rotation
+                } else if delta <= -threshold {
+                    selection = (selection - 1 + count) % count
+                    lastRotationAngle = value.rotation
+                }
+            }
+    }
     
     
     
@@ -179,7 +207,7 @@ extension CodeBreaker {
 }
 
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var game: CodeBreaker = CodeBreaker(name: "Test", pegChoices: [Color.brown, .gray, .pink, .cyan, .blue])
     
     NavigationStack {

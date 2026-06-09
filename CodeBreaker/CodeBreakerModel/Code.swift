@@ -26,9 +26,9 @@ class Code {
     }
     var timeStamp = Date.now // 记录生成时间，方便排序
     
-    static let missingPeg = ""
+    static let missingPeg: String = "clear"
     
-    init(kind: Kind, pegs: [Peg] = Array(repeating: Code.missingPeg, count: 4)) {
+    init(kind: Kind, pegs: [Peg] = Array(repeating: missingPeg, count: 4)) {
         self.pegs = pegs
         self._kind = kind.rawString
     }

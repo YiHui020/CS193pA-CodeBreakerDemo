@@ -1,5 +1,15 @@
 # 开发日志 — CodeBreaker
 
+## 2026-06-09
+
+### 文件变更
+
+- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: guessButton 与 PegChooser 用 GeometryReader 包裹，确保 GameOver 状态下正确隐藏布局
+
+### 变更摘要
+
+修复布局问题 — guessButton 和 PegChooser 在游戏结束过渡动画中可能出现的位置异常，通过 GeometryReader 提供稳定的容器空间解决。
+
 ## 2026-06-05
 
 ### 文件变更

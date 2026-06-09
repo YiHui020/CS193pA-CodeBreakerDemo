@@ -55,9 +55,7 @@ struct GameList: View {
         List (selection: $selection){
             ForEach (games) { game in
                 Section {
-                    NavigationLink(value: game) {
-                        GameSummary(game: game)
-                    }
+                    GameSummary(game: game)
                     .contextMenu {
                         editButton(for: game) // edit game
                         DeleteButton(for: game)
