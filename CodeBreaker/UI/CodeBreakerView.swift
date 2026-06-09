@@ -64,7 +64,7 @@ struct CodeBreakerView: View {
                     }
                 }
     //            .aspectRatio(CGFloat(game.pegChoices.count) * 0.5, contentMode: .fit)
-                .frame(maxHeight: 60)
+                .frame(maxHeight: 50)
 
                 GeometryReader { pegGeometry in
                     if !game.isGameOver {
@@ -74,7 +74,7 @@ struct CodeBreakerView: View {
                     }
                 }
                 .aspectRatio(CGFloat(game.pegChoices.count), contentMode: .fit)
-                .frame(maxHeight: 85)
+                .frame(maxHeight: 70)
             }
             
         }
@@ -109,16 +109,8 @@ struct CodeBreakerView: View {
     var pegChoosingDial: some Gesture {
         RotateGesture()
             .onChanged { value in
-                let delta = value.rotation - lastRotationAngle
-                let threshold = Angle.degrees(30)
-                let count = game.guessCode.pegs.count
-                if delta >= threshold {
-                    selection = (selection + 1) % count
-                    lastRotationAngle = value.rotation
-                } else if delta <= -threshold {
-                    selection = (selection - 1 + count) % count
-                    lastRotationAngle = value.rotation
-                }
+                let pegChoiceIndex = Int(abs(value.rotation.degrees) / 90) % game.pegChoices.count
+                game.guessCode.pegs[selection] = game.pegChoices[pegChoiceIndex]
             }
     }
     

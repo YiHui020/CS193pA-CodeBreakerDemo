@@ -52,10 +52,13 @@ struct GameList: View {
     
     // MARK: Body -
     var body: some View {
+        let _ = print("games array: \(games.count)")
         List (selection: $selection){
             ForEach (games) { game in
                 Section {
-                    GameSummary(game: game)
+                    NavigationLink(value: game) {
+                        GameSummary(game: game)
+                    }
                     .contextMenu {
                         editButton(for: game) // edit game
                         DeleteButton(for: game)
@@ -107,30 +110,49 @@ struct GameList: View {
         }
         // MARK: Toolbar End -
         
-        .onAppear {
-            
-            let fetchDescriptor = FetchDescriptor<CodeBreaker>(
-                predicate: .true, // 这个谓词表示获取所有对象
-//                sortBy: [.init(\.name)] // 返回结果按照 name 排序
-            )
-            let results = try? modelContext.fetchCount(fetchDescriptor)
-            if let results, results == 0  {
-                selection = games.first
-                modelContext.insert(CodeBreaker(
-                    name: "EnterGrade",
-                    pegChoices: [.red, .green, .blue]))
-                modelContext.insert(CodeBreaker(
-                    name: "NormalGrade",
-                    pegChoices: [.indigo, .cyan, .mint, .teal]))
-                modelContext.insert(CodeBreaker(
-                    name: "MasterGrade",
-                    pegChoices: [.orange, .yellow, .pink, .brown, .gray]))
-            } else {
-                print("had Problem fetching CodeBreaker objects")
+//        .onAppear {
+//            
+//            let fetchDescriptor = FetchDescriptor<CodeBreaker>(
+//                predicate: .true, // 这个谓词表示获取所有对象
+////                sortBy: [.init(\.name)] // 返回结果按照 name 排序
+//            )
+//            let results = try? modelContext.fetchCount(fetchDescriptor)
+//            if let results, results == 0  {
+//                selection = games.first
+//                modelContext.insert(CodeBreaker(
+//                    name: "EnterGrade",
+//                    pegChoices: [.red, .green, .blue]))
+//                modelContext.insert(CodeBreaker(
+//                    name: "NormalGrade",
+//                    pegChoices: [.indigo, .cyan, .mint, .teal]))
+//                modelContext.insert(CodeBreaker(
+//                    name: "MasterGrade",
+//                    pegChoices: [.orange, .yellow, .pink, .brown, .gray]))
+//            } else {
+//                print("had Problem fetching CodeBreaker objects")
+//            }
+//            
+//            
+//        }
+            .onAppear {
+                print("onAppear called")
+                do {
+                    let fetchDescriptor = FetchDescriptor<CodeBreaker>(predicate: .true)
+                    let results = try modelContext.fetchCount(fetchDescriptor)
+                    print("fetch count: \(results)")
+                    if results == 0 {
+                        modelContext.insert(CodeBreaker(name: "EnterGrade", pegChoices: [.red, .green, .blue]))
+                        modelContext.insert(CodeBreaker(name: "NormalGrade", pegChoices: [.indigo, .cyan, .mint, .teal]))
+                        modelContext.insert(CodeBreaker(name: "MasterGrade", pegChoices: [.orange, .yellow, .pink, .brown, .gray]))
+                        print("inserted 3 games")
+                        print("games count after insert: \(games.count)")
+                    } else {
+                        print("already has \(results) games")
+                    }
+                } catch {
+                    print("error: \(error)")
+                }
             }
-            
-            
-        }
 
     }
     

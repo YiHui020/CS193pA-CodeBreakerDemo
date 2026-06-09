@@ -13,10 +13,11 @@ struct GameChooser: View {
     @State private var selection: CodeBreaker? = nil
     @State private var sortOption: GameList.SortOption = .name
     @State private var searchString: String = ""
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     
     // MARK: Body -
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             Picker("Sort By", selection: $sortOption.animation(.default)) {
                 ForEach(GameList.SortOption.allCases, id: \.self) { option in
                     Text(option.title)

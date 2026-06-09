@@ -14,10 +14,10 @@ struct CodeBreakerApp: App {
         WindowGroup {
             GeometryReader { geometry in
                 GameChooser()
-                    .modelContainer(for: CodeBreaker.self)
                     .environment(\.sceneFrame, geometry.frame(in: .global))
             }
         }
+        .modelContainer(for: CodeBreaker.self)
     }
 }
 
