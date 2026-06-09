@@ -1,2 +1,2 @@
 # CodeBreaker
-a Swift study project from CS193p by 惠
+a Swift study project from CS193p
