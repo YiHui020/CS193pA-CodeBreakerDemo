@@ -52,15 +52,17 @@ struct CodeBreakerView: View {
                     // 拿到Attempts的动画
                 }
             }
-            
-            if !game.isGameOver {
-                guessButton
-                    .transition(.offset(x: 0, y: 200))
-                PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
-                    .transition(.pegChooser)
-                    .frame(maxHeight: 80)
-                    
+            GeometryReader { geometry in
+                if !game.isGameOver {
+                    guessButton
+                        .transition(.offset(x: 0, y: 200))
+                    PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
+                        .transition(.pegChooser)
+                        .frame(maxHeight: 80)
+                        
+                }
             }
+            
                 
         }
         .padding(10)
