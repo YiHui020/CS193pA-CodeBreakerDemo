@@ -4,11 +4,14 @@
 
 ### 文件变更
 
-- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: guessButton 与 PegChooser 用 GeometryReader 包裹，确保 GameOver 状态下正确隐藏布局
+- **CodeBreaker/UI/CodeBreakerView.swift** *(修改)*: guessButton/PegChooser 拆分独立 GeometryReader 实现精确过渡偏移；新增 RotateGesture 旋转切换选中 Peg；引入 sceneFrame 计算过渡动画距离
+- **CodeBreaker/CodeBreakerModel/Code.swift** *(修改)*: `missingPeg` 从空字符串改为 `"clear"`，语义化缺失 Peg 表示
+- **CodeBreaker/UI/GameList.swift** *(修改)*: 移除冗余 NavigationLink 包裹，GameSummary 直接作为列表行
+- **CodeBreaker/UI/PegView.swift** *(修改)*: `strokeBorder` → `stroke`，注释说明点击区域
 
 ### 变更摘要
 
-修复布局问题 — guessButton 和 PegChooser 在游戏结束过渡动画中可能出现的位置异常，通过 GeometryReader 提供稳定的容器空间解决。
+UI 交互升级 — 新增旋转手势（RotateGesture）替代纯点击选择 Peg，拆分 GeometryReader 使 GuessButton 与 PegChooser 各自独立计算过渡偏移量。模型层 missingPeg 语义化（空字符串 → "clear"），GameList 精简掉多余的 NavigationLink 嵌套。
 
 ## 2026-06-05
 
