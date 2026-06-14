@@ -17,7 +17,11 @@ struct GameList: View {
     
     // MARK: Data Owned by Me
     @State var gameToEdit: CodeBreaker?
-    
+    var gameSummarySize: GameSummary.Size {
+        staticSummarySize * dynamicSummarySizeMagnification
+    }
+    @State private var staticSummarySize: GameSummary.Size = .large
+    @State private var dynamicSummarySizeMagnification: CGFloat = 1.0
     
     // MARK: Data Shared by Me
     @Binding var selection: CodeBreaker?
@@ -57,7 +61,7 @@ struct GameList: View {
             ForEach (games) { game in
                 Section {
                     NavigationLink(value: game) {
-                        GameSummary(game: game)
+                        GameSummary(game: game, size: gameSummarySize)
                     }
                     .contextMenu {
                         editButton(for: game) // edit game
@@ -77,6 +81,7 @@ struct GameList: View {
             }
             
         }
+        .highPriorityGesture(summarySizeMagnifier())
         .animation(.easeInOut, value: games.count)
         .onChange(of: games) {
             if let selection, !games.contains(selection) {
@@ -109,31 +114,6 @@ struct GameList: View {
             
         }
         // MARK: Toolbar End -
-        
-//        .onAppear {
-//            
-//            let fetchDescriptor = FetchDescriptor<CodeBreaker>(
-//                predicate: .true, // 这个谓词表示获取所有对象
-////                sortBy: [.init(\.name)] // 返回结果按照 name 排序
-//            )
-//            let results = try? modelContext.fetchCount(fetchDescriptor)
-//            if let results, results == 0  {
-//                selection = games.first
-//                modelContext.insert(CodeBreaker(
-//                    name: "EnterGrade",
-//                    pegChoices: [.red, .green, .blue]))
-//                modelContext.insert(CodeBreaker(
-//                    name: "NormalGrade",
-//                    pegChoices: [.indigo, .cyan, .mint, .teal]))
-//                modelContext.insert(CodeBreaker(
-//                    name: "MasterGrade",
-//                    pegChoices: [.orange, .yellow, .pink, .brown, .gray]))
-//            } else {
-//                print("had Problem fetching CodeBreaker objects")
-//            }
-//            
-//            
-//        }
             .onAppear {
                 print("onAppear called")
                 do {
@@ -168,6 +148,19 @@ struct GameList: View {
             }
         }
     }
+    
+    func summarySizeMagnifier() -> some Gesture {
+        MagnifyGesture()
+            .onChanged {value in
+                dynamicSummarySizeMagnification = value.magnification
+            }
+            .onEnded { value in
+                staticSummarySize = staticSummarySize * value.magnification
+                
+            }
+            
+    }
+    
     
     func DeleteButton(for game: CodeBreaker) -> some View {
         Button ("Delete", systemImage: "minus.circle", role: .destructive) {
@@ -210,10 +203,22 @@ struct GameList: View {
     
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var selection: CodeBreaker?
     NavigationStack {
         GameList(selection: $selection)
+    }
+}
+
+extension GameSummary.Size {
+    static func *(lhs: Self, rhs: CGFloat) -> Self{
+        switch rhs {
+        case 2.0...: lhs.larger.larger
+        case 1.5...: lhs.larger
+        case ...0.6: lhs.smaller
+        case ...0.35: lhs.smaller.smaller
+        default: lhs
+        }
     }
 }
 
