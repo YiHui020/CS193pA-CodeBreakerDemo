@@ -1,5 +1,16 @@
 # 开发日志 — CodeBreaker
 
+## 2026-06-14
+
+### 文件变更
+
+- **CodeBreaker/UI/GameSummary.swift** *(修改)*: 新增 `Size` 枚举（compact/regular/large），根据尺寸切换字体大小、peg 尺寸和布局方向（HStack/VStack）
+- **CodeBreaker/UI/GameList.swift** *(修改)*: 新增 `MagnifyGesture` 两指缩放动态调整 GameSummary 卡片尺寸，移除注释掉的旧 onAppear 代码
+
+### 变更摘要
+
+GameSummary 引入响应式尺寸系统 — 支持 compact/regular/large 三档，随尺寸自动适配布局、字体和 peg 大小。GameList 新增两指缩放手势（MagnifyGesture），用户可通过捏合手势实时调整所有游戏卡片的显示尺寸。移除了之前注释掉的 FetchDescriptor 播种代码。
+
 ## 2026-06-09
 
 ### 文件变更
